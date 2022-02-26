@@ -12,10 +12,3 @@ export function getElementParent(el: HTMLElement, name: string): HTMLElement | n
     ? parent
     : getElementParent(parent, name)
 }
-
-/**
- * 获取 DOM 节点设置的自定义属性
- * @param el 当前元素
- * @param attr 自定义属性
- */
-export const getElementDataset = (el: HTMLElement, attr: string) => el.dataset[attr]

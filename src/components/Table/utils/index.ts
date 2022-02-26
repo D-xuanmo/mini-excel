@@ -1,8 +1,5 @@
 import { CoordinateFormattedType, TableCellType } from '../types'
 
-/** 拖拽方向 */
-export type DragDirection = 'top_left' | 'top_right' | 'bottom_left' | 'bottom_right' | null
-
 /**
  * 数字转数组
  * @param num 数组长度

@@ -1,0 +1,12 @@
+.d-table-container {
+  border-collapse: collapse;
+  user-select: none;
+}
+.d-table-container th,
+.d-table-container td {
+  border: 1px solid #f00;
+}
+
+.d-table-container .is-active {
+  background: #61dafb;
+}

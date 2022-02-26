@@ -11,7 +11,8 @@ import {
   generateFlatTableRows,
   generateTableMap,
   getCoordinateRange,
-  mergeTable, splitTable
+  mergeTable,
+  splitTable
 } from './utils'
 
 function Table(props: TableProps, ref: any) {
@@ -27,6 +28,10 @@ function Table(props: TableProps, ref: any) {
     const currentTarget = event.currentTarget as HTMLElement
     // 当前点击的单元格
     const cell = getElementParent(event.target as HTMLElement, 'td')
+    
+    // 如果触发元素不是 td，不执行后续操作
+    if (!cell) return
+    
     // 开始坐标
     const startCoordinate = cell?.dataset.coordinate!
     const startMergedCoordinate = cell?.dataset.mergedCoordinate ?? ''

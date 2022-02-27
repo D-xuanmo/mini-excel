@@ -16,12 +16,15 @@ import {
 } from './utils'
 
 function Table(props: TableProps, ref: any) {
-  const { rowNumber, columnNumber, customRenderCell } = props
+  const { rowNumber, columnNumber, readonly, customRenderCell } = props
   const [rows, setRows] = useState(generateTableMap(generateFlatTableRows(rowNumber, columnNumber), columnNumber))
   const [selectedCoordinates, setSelectedCoordinates] = useState<Array<string>>([])
   const [selectedIndexList, setSelectedIndexList] = useState<Array<number>>([])
   
   function onMouseDown(event: React.MouseEvent) {
+    // 如果为只读模式，不执行后续逻辑
+    if (readonly) return
+    
     // 记录当前触发 onmousedown 的元素
     const currentTarget = event.currentTarget as HTMLElement
     

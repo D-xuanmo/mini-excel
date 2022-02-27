@@ -164,8 +164,8 @@ export function getCoordinateRange(
         const coordinate = `${x}_${y}`
         const currentCell = cells[coordinateToIndex(coordinate, column)]
         result.push(coordinate)
-        if (currentCell.firstCoordinate) result.push(currentCell.firstCoordinate)
-        if (currentCell.mergedCoordinate) result.push(currentCell.mergedCoordinate)
+        if (currentCell?.firstCoordinate) result.push(currentCell.firstCoordinate)
+        if (currentCell?.mergedCoordinate) result.push(currentCell.mergedCoordinate)
       }
     }
     return Array.from(new Set(result))

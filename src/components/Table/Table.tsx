@@ -15,11 +15,28 @@ import {
   splitTable
 } from './utils'
 
+// 默认行
+const DEFAULT_ROW = 10
+
+// 默认列
+const DEFAULT_COLUMN = 10
+
 function Table(props: TableProps, ref: any) {
-  const { rowNumber, columnNumber, readonly, customRenderCell } = props
-  const [rows, setRows] = useState(generateTableMap(generateFlatTableRows(rowNumber, columnNumber), columnNumber))
+  const {
+    rowNumber = DEFAULT_ROW,
+    columnNumber = DEFAULT_COLUMN,
+    defaultRows,
+    readonly,
+    showHeader = true,
+    customRenderCell,
+    onChange,
+    onSelect
+  } = props
+  const [rows, setRows] = useState(generateTableMap(defaultRows ?? generateFlatTableRows(rowNumber, columnNumber), columnNumber))
   const [selectedCoordinates, setSelectedCoordinates] = useState<Array<string>>([])
   const [selectedIndexList, setSelectedIndexList] = useState<Array<number>>([])
+  
+  onChange?.(rows)
   
   function onMouseDown(event: React.MouseEvent) {
     // 如果为只读模式，不执行后续逻辑
@@ -42,8 +59,8 @@ function Table(props: TableProps, ref: any) {
     const startMergedCoordinate = cell?.dataset.mergedCoordinate ?? ''
     
     if (event.button !== 0) {
-      setSelectedCoordinates([startCoordinate])
-      setSelectedIndexList(coordinatesToIndexList(flatRows, startCoordinate, startCoordinate, columnNumber))
+      // setSelectedCoordinates([startCoordinate])
+      // setSelectedIndexList(coordinatesToIndexList(flatRows, startCoordinate, startCoordinate, columnNumber))
       return
     }
 
@@ -53,7 +70,7 @@ function Table(props: TableProps, ref: any) {
     // 记录所有的坐标，坐标池
     let allCoordinates: string[] = [startCoordinate, startMergedCoordinate]
     
-    function setEndPosition(event: React.MouseEvent) {
+    function setEndPosition(event: React.MouseEvent, isMove?: boolean) {
       allCoordinates = [startCoordinate, startMergedCoordinate]
       // 当前鼠标停留的单元格
       const currentCell = getElementParent(event.target as HTMLElement, 'td')
@@ -74,13 +91,17 @@ function Table(props: TableProps, ref: any) {
       } = buildSelectionCoordinates(flatRows, allCoordinates, columnNumber)
       
       // 将已经计算后的坐标区间做记录
-      setSelectedCoordinates(getCoordinateRange(flatRows, _startCoordinate, endCoordinate, columnNumber))
+      const coordinates = getCoordinateRange(flatRows, _startCoordinate, endCoordinate, columnNumber)
+      setSelectedCoordinates(coordinates)
       
       // 计算后的坐标区间下标
-      setSelectedIndexList(coordinatesToIndexList(flatRows, _startCoordinate, endCoordinate, columnNumber))
+      const indexList = coordinatesToIndexList(flatRows, _startCoordinate, endCoordinate, columnNumber)
+      setSelectedIndexList(indexList)
+      
+      if (!isMove) onSelect?.(coordinates, indexList)
     }
     
-    currentTarget.onmousemove = (event: any) => setEndPosition(event)
+    currentTarget.onmousemove = (event: any) => setEndPosition(event, true)
     
     currentTarget.onmouseup = (event: any) => {
       // 记录最后一次坐标信息
@@ -98,13 +119,21 @@ function Table(props: TableProps, ref: any) {
   }
   
   useImperativeHandle(ref, () => ({
-    merge: () => setRows(mergeTable(flatTableRow(rows), selectedCoordinates, columnNumber)),
-    split: () => setRows(splitTable(flatTableRow(rows), selectedIndexList, columnNumber)),
+    merge: () => {
+      const newRows = mergeTable(flatTableRow(rows), selectedCoordinates, columnNumber)
+      setRows(newRows)
+      onChange?.(newRows)
+    },
+    split: () => {
+      const newRows = splitTable(flatTableRow(rows), selectedIndexList, columnNumber)
+      setRows(newRows)
+      onChange?.(newRows)
+    },
     clean
   }))
   
   return <table className="d-table-container" onMouseDown={onMouseDown}>
-    <THead columnNumber={columnNumber} />
+    {showHeader ? <THead columnNumber={columnNumber} /> : null}
     <TBody
       rows={rows}
       rowNumber={rowNumber}

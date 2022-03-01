@@ -300,7 +300,7 @@ export function transformCoordinate(coordinate: string[], column: number) {
  *   [{}, {}, {}]
  * ]
  */
-export function generateTableMap(rows: TableCellType[], column: number) {
+export function generateTableMap(rows: Array<TableCellType> | Array<Array<TableCellType>>, column: number) {
   const tableMap: Array<Array<TableCellType>> = []
   let rowIndex = -1
   let columnIndex = 0
